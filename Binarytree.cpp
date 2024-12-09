@@ -51,15 +51,14 @@ void insert(Node *&root, int value) {
     }
 }
 
-
-Node* findMin(Node *root) {
+Node *findMin(Node *root) {
     while (root->left != NULL) {
         root = root->left;
     }
     return root;
 }
 
-Node* removeNode(Node *root, int value) {
+Node *removeNode(Node *root, int value) {
     if (root == NULL) {
         return NULL;
     }
@@ -109,6 +108,31 @@ void LevelRoute(Node *root) {
     cout << endl;
 }
 
+void PreOrder(Node *root) {
+    if (root == NULL) return;
+
+    cout << root->value << " ";
+    PreOrder(root->left);
+    PreOrder(root->right);
+}
+
+void PostOrder(Node *root) {
+    if (root == NULL) return;
+
+    PostOrder(root->left);
+    PostOrder(root->right);
+    cout << root->value << " ";
+}
+
+void InOrder(Node *root) {
+    if (root == NULL) return; 
+
+    InOrder(root->left);
+    cout << root->value << " ";
+    InOrder(root->right);
+}
+
+
 void printTree(Node *root, int level = 0) {
     if (root == NULL) return;
 
@@ -128,12 +152,12 @@ void insertMultiple(Node *&root) {
 
     cout << "Digite os valores a serem inseridos: ";
     int i = 0;
-    while(i < n) {
+    while (i < n) {
         cin >> value;
-        if(search(root, value)) {
+        if (search(root, value)) {
             cout << "Valor já existe na árvore. Insira outro valor: ";
             continue;
-        }else {
+        } else {
             insert(root, value);
         }
         i++;
@@ -145,10 +169,13 @@ void printMenu() {
     cout << "\n===== Menu =====" << endl;
     cout << "1. Inserir valor único" << endl;
     cout << "2. Inserir múltiplos valores" << endl;
-    cout << "3. Remover valor" << endl;
-    cout << "4. Imprimir percurso em nível" << endl;
-    cout << "5. Imprimir árvore" << endl;
-    cout << "6. Sair" << endl;
+    cout << "3. Imprimir árvore" << endl;
+    cout << "4. Remover valor" << endl;
+    cout << "5. Imprimir percurso em nível" << endl;
+    cout << "6. Imprimir percurso em pré-ordem" << endl;
+    cout << "7. Imprimir percurso em pós-ordem" << endl;
+    cout << "8. Imprimir percurso em ordem simétrica" << endl;
+    cout << "9. Sair" << endl;
     cout << "Escolha uma opção: ";
 }
 
@@ -170,29 +197,54 @@ int main() {
                 insertMultiple(root);
                 break;
             case 3:
+                cout << "Árvore:" << endl;
+                printTree(root);
+                break;
+            case 4:
                 cout << "Digite o valor para remover: ";
                 cin >> value;
                 if (search(root, value)) {
                     root = removeNode(root, value);
                     cout << "Valor removido!" << endl;
+                    cout << "Árvore atualizada:" << endl;
+                    printTree(root);
                 } else {
                     cout << "Valor não encontrado na árvore." << endl;
                 }
                 break;
-            case 4:
+            case 5:
+                cout << "Àrvore:" << endl;
+                printTree(root);
+                cout << "Percurso em nível: ";
                 LevelRoute(root);
                 break;
-            case 5:
-                cout << "Árvore:" << endl;
-                printTree(root);
-                break;
             case 6:
+                cout << "Àrvore:" << endl;
+                printTree(root);
+                cout << "Percurso em pré-ordem: ";
+                PreOrder(root);
+                cout << endl;
+                break;
+            case 7:
+                cout << "Àrvore:" << endl;
+                printTree(root);
+                cout << "Percurso em pós-ordem: ";
+                PostOrder(root);
+                cout << endl;
+                break;
+            case 8:
+                cout << "Àrvore:" << endl;
+                printTree(root);
+                cout << "Percurso em ordem simétrica: ";
+                InOrder(root);
+                cout << endl;
+                break;
+            case 9:
                 cout << "Saindo do programa..." << endl;
                 return 0;
             default:
                 cout << "Opção inválida! Tente novamente." << endl;
         }
     }
-
     return 0;
 }

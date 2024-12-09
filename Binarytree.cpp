@@ -1,4 +1,5 @@
 #include <iostream>
+#include <queue>
 using namespace std;
 
 struct Node {
@@ -34,8 +35,12 @@ void insert(Node *&root, int value) {
         root = createNode(value);
         return;
     }
-    if(search(root, value)){
-        cout << "Valor já existe na árvore" << endl;
+
+    if (search(root, value)) {
+        cout << "Valor já existe na árvore. Insira outro valor: ";
+        int newValue;
+        cin >> newValue;
+        insert(root, newValue);
         return;
     }
 
@@ -46,6 +51,63 @@ void insert(Node *&root, int value) {
     }
 }
 
+
+Node* findMin(Node *root) {
+    while (root->left != NULL) {
+        root = root->left;
+    }
+    return root;
+}
+
+Node* removeNode(Node *root, int value) {
+    if (root == NULL) {
+        return NULL;
+    }
+    if (value < root->value) {
+        root->left = removeNode(root->left, value);
+    } else if (value > root->value) {
+        root->right = removeNode(root->right, value);
+    } else {
+        if (root->left == NULL && root->right == NULL) {
+            delete root;
+            return NULL;
+        } else if (root->left == NULL) {
+            Node *temp = root->right;
+            delete root;
+            return temp;
+        } else if (root->right == NULL) {
+            Node *temp = root->left;
+            delete root;
+            return temp;
+        } else {
+            Node *temp = findMin(root->right);
+            root->value = temp->value;
+            root->right = removeNode(root->right, temp->value);
+        }
+    }
+    return root;
+}
+
+void LevelRoute(Node *root) {
+    if (root == NULL) {
+        cout << "Árvore vazia." << endl;
+        return;
+    }
+
+    queue<Node *> q;
+    q.push(root);
+
+    while (!q.empty()) {
+        Node *current = q.front();
+        q.pop();
+
+        cout << current->value << " ";
+
+        if (current->left != NULL) q.push(current->left);
+        if (current->right != NULL) q.push(current->right);
+    }
+    cout << endl;
+}
 
 void printTree(Node *root, int level = 0) {
     if (root == NULL) return;
@@ -59,35 +121,78 @@ void printTree(Node *root, int level = 0) {
     printTree(root->right, level + 1);
 }
 
-int countNodes(Node *root) {
-    if (root == NULL) return 0;
-    return 1 + countNodes(root->left) + countNodes(root->right);
+void insertMultiple(Node *&root) {
+    int n, value;
+    cout << "Quantos números deseja inserir? ";
+    cin >> n;
+
+    cout << "Digite os valores a serem inseridos: ";
+    int i = 0;
+    while(i < n) {
+        cin >> value;
+        if(search(root, value)) {
+            cout << "Valor já existe na árvore. Insira outro valor: ";
+            continue;
+        }else {
+            insert(root, value);
+        }
+        i++;
+    }
+    cout << "Valores processados!" << endl;
 }
 
-int countLeaves(Node *root) {
-    if (root == NULL) return 0;
-    if (root->left == NULL && root->right == NULL) return 1;
-    return countLeaves(root->left) + countLeaves(root->right);
+void printMenu() {
+    cout << "\n===== Menu =====" << endl;
+    cout << "1. Inserir valor único" << endl;
+    cout << "2. Inserir múltiplos valores" << endl;
+    cout << "3. Remover valor" << endl;
+    cout << "4. Imprimir percurso em nível" << endl;
+    cout << "5. Imprimir árvore" << endl;
+    cout << "6. Sair" << endl;
+    cout << "Escolha uma opção: ";
 }
 
 int main() {
     Node *root = NULL;
-    int n, value;
+    int choice, value;
 
-    cout << "Digite o número de nós: ";
-    cin >> n;
+    while (true) {
+        printMenu();
+        cin >> choice;
 
-    cout << "Digite os valores dos nós:" << endl;
-    for (int i = 0; i < n; i++) {
-        cin >> value;
-        insert(root, value);
+        switch (choice) {
+            case 1:
+                cout << "Digite o valor para inserir: ";
+                cin >> value;
+                insert(root, value);
+                break;
+            case 2:
+                insertMultiple(root);
+                break;
+            case 3:
+                cout << "Digite o valor para remover: ";
+                cin >> value;
+                if (search(root, value)) {
+                    root = removeNode(root, value);
+                    cout << "Valor removido!" << endl;
+                } else {
+                    cout << "Valor não encontrado na árvore." << endl;
+                }
+                break;
+            case 4:
+                LevelRoute(root);
+                break;
+            case 5:
+                cout << "Árvore:" << endl;
+                printTree(root);
+                break;
+            case 6:
+                cout << "Saindo do programa..." << endl;
+                return 0;
+            default:
+                cout << "Opção inválida! Tente novamente." << endl;
+        }
     }
-
-    cout << "Árvore binária:" << endl;
-    printTree(root);
-
-    cout << "Número total de nós: " << countNodes(root) << endl;
-    cout << "Número total de folhas: " << countLeaves(root) << endl;
 
     return 0;
 }
